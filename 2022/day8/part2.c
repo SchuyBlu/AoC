@@ -63,102 +63,69 @@ char** build_plot(FILE *stream, char **plot, size_t *nrowsl, size_t *nrowsc, siz
 }
 
 
-uint32_t analyze_plot(char **plot, size_t nrowsl, size_t row_len)
+int analyze_plot(char **plot, size_t nrowsl, size_t row_len)
 {
-    char tree_under_consideration, tree_being_compared_to;
-    bool visible_in_column, visible_in_row;
-    bool visible_on_left, visible_on_right;
-    bool visible_on_top, visible_on_bottom;
-    uint32_t count = 0;
+    int temp_count;
+    int lcount, rcount, tcount, bcount, scenic_score = 0;
 
     // Go through each character
     for (int i = 0; i < nrowsl; i++) {
         for (int j = 0; j < row_len; j++) {
-            // Assign the current value to the tree under consideration
-            tree_under_consideration = plot[i][j];
-
-            // Add to count for every tree on outside of the
-            // plot
-            if ((i == 0) || (i == nrowsl - 1)) {
-                count++;
-                continue;
-            }
-            if ((j == 0) || (j == row_len - 1)) {
-                count++;
-                continue;
-            }
-            // Reset boolean values
-            visible_on_left = true;
-            visible_on_right = true;
-            visible_on_top = true;
-            visible_on_bottom = true;
-            visible_in_column = true;
-            visible_in_row = true;
-
-            // Character is at plot[i][j]
-            // Now check character against all four directions
-            // Check each column first
-            for (int k = 0; k < row_len; k++) {
-                // Assign tree being compared to
-                tree_being_compared_to = plot[i][k];
-                // If checking against itself, ignore
-                if (j == k) continue;
-
-                // Checking left side. If current num is bigger than
-                // num being analyzed, set left bool to false
-                if ((k < j) && tree_being_compared_to >= tree_under_consideration)
-                    visible_on_left = false;
-
-                // Check right side using same logic as above
-                if ((k > j) && tree_being_compared_to >= tree_under_consideration)
-                    visible_on_right = false;
-
-                // If neither visible on left or visible on right,
-                // visible in column is not true
-                if ((!visible_on_left) && (!visible_on_right))
-                    visible_in_column = false;
-
-                // If not visible in column, break to prevent unecessary
-                // iteration
-                if (!visible_in_column)
+            // Look in the left direction
+            temp_count = 0;
+            for (int k = j - 1; k >= 0; k--) {
+                if (plot[i][k] < plot[i][j])
+                    temp_count++;
+                else {
+                    temp_count++;
                     break;
+                }
             }
+            lcount = temp_count;
+            temp_count = 0;
 
-            // Now check each row
-            for (int l = 0; l < nrowsl; l++) {
-                tree_being_compared_to = plot[l][j];
-
-                // If checking against itself, ignore
-                if (i == l) continue;
-
-                // Checking top side. If current num is bigger than
-                // num being analyzed, set the top bool to false
-                if ((l < i) && tree_being_compared_to >= tree_under_consideration)
-                    visible_on_top = false;
-
-                // Check bottom side using the same logic as above
-                if ((l > i) && tree_being_compared_to >= tree_under_consideration)
-                    visible_on_bottom = false;
-
-                // If neither visible on top or visible on bottom,
-                // visible in row is not true
-                if ((!visible_on_top) && (!visible_on_bottom))
-                    visible_in_row = false;
-
-                // If not visible in row, break to prevent unecessary
-                // iteration
-                if (!visible_in_row)
+            // Look in the right direction
+            for (int k = j + 1; k < row_len; k++) {
+                if (plot[i][k] < plot[i][j])
+                    temp_count++;
+                else {
+                    temp_count++;
                     break;
+                }
             }
+            rcount = temp_count;
+            temp_count = 0;
 
-            // Now that both rows and columns have been checked, if either is true
-            // we can add one to the count
-            if (visible_in_row || visible_in_column) {
-                count++;
+            // Look from the top
+            for (int k = i - 1; k >= 0; k--) {
+                if (plot[k][j] < plot[i][j])
+                    temp_count++;
+                else {
+                    temp_count++;
+                    break;
+                }
             }
-        }
+            tcount = temp_count;
+            temp_count = 0;
+
+            // Look from bottom
+            for (int k = i + 1; k < nrowsl; k++) {
+                if (plot[k][j] < plot[i][j])
+                    temp_count++;
+                else {
+                    temp_count++;
+                    break;
+                }
+            }
+            bcount = temp_count;
+            temp_count = 0;
+
+            // Check if scenic score gets overwritten
+            if (scenic_score <= (lcount * rcount * tcount * bcount))
+                scenic_score = lcount * rcount * tcount * bcount;
+        } 
     }
-    return count;
+    return scenic_score;
 }
 
 
