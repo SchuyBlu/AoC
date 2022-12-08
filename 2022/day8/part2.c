@@ -74,48 +74,44 @@ int analyze_plot(char **plot, size_t nrowsl, size_t row_len)
             // Look in the left direction
             temp_count = 0;
             for (int k = j - 1; k >= 0; k--) {
-                if (plot[i][k] < plot[i][j])
-                    temp_count++;
-                else {
+                if (!(plot[i][k] < plot[i][j])) {
                     temp_count++;
                     break;
                 }
+                temp_count++;
             }
             lcount = temp_count;
             temp_count = 0;
 
             // Look in the right direction
             for (int k = j + 1; k < row_len; k++) {
-                if (plot[i][k] < plot[i][j])
-                    temp_count++;
-                else {
+                if (!(plot[i][k] < plot[i][j])) {
                     temp_count++;
                     break;
                 }
+                temp_count++;
             }
             rcount = temp_count;
             temp_count = 0;
 
             // Look from the top
             for (int k = i - 1; k >= 0; k--) {
-                if (plot[k][j] < plot[i][j])
-                    temp_count++;
-                else {
+                if (!(plot[k][j] < plot[i][j])) {
                     temp_count++;
                     break;
                 }
+                temp_count++;
             }
             tcount = temp_count;
             temp_count = 0;
 
             // Look from bottom
             for (int k = i + 1; k < nrowsl; k++) {
-                if (plot[k][j] < plot[i][j])
-                    temp_count++;
-                else {
+                if (!(plot[k][j] < plot[i][j])) {
                     temp_count++;
                     break;
                 }
+                temp_count++;
             }
             bcount = temp_count;
             temp_count = 0;
