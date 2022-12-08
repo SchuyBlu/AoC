@@ -65,6 +65,7 @@ char** build_plot(FILE *stream, char **plot, size_t *nrowsl, size_t *nrowsc, siz
 
 uint32_t analyze_plot(char **plot, size_t nrowsl, size_t row_len)
 {
+    char tree_under_consideration, tree_being_compared_to;
     bool visible_in_column, visible_in_row;
     bool visible_on_left, visible_on_right;
     bool visible_on_top, visible_on_bottom;
@@ -73,6 +74,9 @@ uint32_t analyze_plot(char **plot, size_t nrowsl, size_t row_len)
     // Go through each character
     for (int i = 0; i < nrowsl; i++) {
         for (int j = 0; j < row_len; j++) {
+            // Assign the current value to the tree under consideration
+            tree_under_consideration = plot[i][j];
+
             // Add to count for every tree on outside of the
             // plot
             if ((i == 0) || (i == nrowsl - 1)) {
@@ -95,21 +99,18 @@ uint32_t analyze_plot(char **plot, size_t nrowsl, size_t row_len)
             // Now check character against all four directions
             // Check each column first
             for (int k = 0; k < row_len; k++) {
-                // If k is bigger than j and still visible
-                // in column, break because its visible from
-                // one side
-                if ((k > j) && visible_on_left) break;
-
+                // Assign tree being compared to
+                tree_being_compared_to = plot[i][k];
                 // If checking against itself, ignore
                 if (j == k) continue;
 
                 // Checking left side. If current num is bigger than
                 // num being analyzed, set left bool to false
-                if ((k < j) && plot[i][k] >= plot[i][j])
+                if ((k < j) && tree_being_compared_to >= tree_under_consideration)
                     visible_on_left = false;
 
                 // Check right side using same logic as above
-                if ((k > j) && plot[i][k] >= plot[i][j])
+                if ((k > j) && tree_being_compared_to >= tree_under_consideration)
                     visible_on_right = false;
 
                 // If neither visible on left or visible on right,
@@ -125,20 +126,18 @@ uint32_t analyze_plot(char **plot, size_t nrowsl, size_t row_len)
 
             // Now check each row
             for (int l = 0; l < nrowsl; l++) {
-                // If l is bigger than i and still visible on top,
-                // break because its visible on one side.
-                if ((l > i) && visible_on_top) break;
+                tree_being_compared_to = plot[l][j];
 
                 // If checking against itself, ignore
                 if (i == l) continue;
 
                 // Checking top side. If current num is bigger than
                 // num being analyzed, set the top bool to false
-                if ((l < i) && plot[l][j] >= plot[i][j])
+                if ((l < i) && tree_being_compared_to >= tree_under_consideration)
                     visible_on_top = false;
 
                 // Check bottom side using the same logic as above
-                if ((l > i) && plot[l][j] >= plot[i][j])
+                if ((l > i) && tree_being_compared_to >= tree_under_consideration)
                     visible_on_bottom = false;
 
                 // If neither visible on top or visible on bottom,
