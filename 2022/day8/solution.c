@@ -71,14 +71,18 @@ uint32_t analyze_plot(char **plot, size_t nrowsl, size_t row_len)
     uint32_t count = 0;
 
     // Go through each character
-    for (int i = 1; i < nrowsl - 1; i++) {
-        for (int j = 1; j < row_len - 1; j++) {
+    for (int i = 0; i < nrowsl; i++) {
+        for (int j = 0; j < row_len; j++) {
             // Add to count for every tree on outside of the
             // plot
-            //if ((i == 0) || (i == nrowsl - 1)) {
-            //    count++;
-            //    continue;
-            //}
+            if ((i == 0) || (i == nrowsl - 1)) {
+                count++;
+                continue;
+            }
+            if ((j == 0) || (j == row_len - 1)) {
+                count++;
+                continue;
+            }
             // Reset boolean values
             visible_on_left = true;
             visible_on_right = true;
